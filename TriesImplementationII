@@ -1,0 +1,61 @@
+from os import *
+from sys import *
+from collections import *
+from math import *
+
+class TrieNode:
+    def __init__(self):
+        self.children = dict()
+        self.end_of_word = False
+        self.word_count = 0
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word):
+        node = self.root
+        for char in word:
+            if char not in node.children:
+                node.children[char] = TrieNode()
+            node = node.children[char]
+        node.end_of_word = True
+        node.word_count +=1
+
+    def countWordsEqualTo(self, word):
+        node = self.root
+        for char in word:
+            if char not in node.children:
+                return 0
+            node = node.children[char]
+        return node.word_count 
+        
+    def countWordsStartingWith(self, word):
+        node = self.root
+        for char in word:
+            if char not in node.children:
+                return 0
+            node = node.children[char]
+        stack,count = [node],0
+        while stack:
+            curr = stack.pop()
+            count+=curr.word_count
+            stack.extend(curr.children.values())
+        return count
+
+    def erase(self, word):
+        node = self.root
+        stack = list()
+        for char in word:
+            stack.append((node,char))
+            node = node.children[char]
+            if node.end_of_word:
+                node.word_count -=1
+                if node.word_count == 0:
+                    while stack:
+                        parent,char = stack.pop()
+                        del parent.children[char]
+                        if parent.end_of_word or len(parent.children)>0:
+                            break
+                            
+
